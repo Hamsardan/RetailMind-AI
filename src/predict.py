@@ -4,7 +4,8 @@ from pathlib import Path
 
 # Locate the persisted model relative to this file
 ROOT_DIR = Path(__file__).resolve().parent.parent
-MODEL_PATH = ROOT_DIR / "models" / "churn_pipeline.joblib"
+# Serve the tuned Day 3 champion; earlier artifacts remain available for comparison.
+MODEL_PATH = ROOT_DIR / "models" / "churn_v3.joblib"
 
 # Load model once when the service is imported
 model = joblib.load(MODEL_PATH)

@@ -91,3 +91,22 @@ Decision Tree achieved the highest recall (49.20%) among the three new models. H
 Logistic Regression therefore remains the platform's overall champion, while Decision Tree is retained as the Day 2 challenger for future comparisons.
 
 **Detailed results:** [Day 2 Documentation](docs/d2.md)
+
+### Day 3 — Multi-Model Tuning & Bias-Variance
+
+Tuned Logistic Regression, Decision Tree, Random Forest, and SVM using `GridSearchCV` with 5-fold cross-validation on the original training split. Churn recall was the selection metric. The original 1,409-row holdout remained outside the search and was evaluated after selecting the champion.
+
+#### Cross-Validation Comparison
+
+| Model | Mean CV Recall | Train–CV Gap |
+| ------------------ | -------------: | -----------: |
+| Logistic Regression | **0.8040** | 0.0012 |
+| SVM | 0.7967 | 0.0120 |
+| Decision Tree | 0.7846 | 0.0381 |
+| Random Forest | 0.7732 | 0.1179 |
+
+**Day 3 Champion: Tuned Logistic Regression** (`C=1`, `class_weight="balanced"`)
+
+Its mean 5-fold CV recall was 0.8040. On the unchanged holdout set it achieved 73.81% accuracy, 50.43% precision, 78.34% recall, and 84.16% ROC-AUC. The higher recall comes with lower precision than the Day 1 baseline, so it flags more non-churners as likely to churn. The learning curve shows train and validation recall converging near 0.80 with little improvement at larger training sizes, suggesting limited variance for recall and a plateau with the current features and model.
+
+The tuned pipeline is saved as `models/churn_v3.joblib`, and the prediction helper now loads this version. Day 1 and Day 2 model artifacts remain available for comparison. Full search results and learning-curve scores: [Day 3 results](docs/d3_results.md).
