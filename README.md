@@ -1,112 +1,23 @@
 # RetailMind AI
 
-## An End-to-End AI-Powered Retail Intelligence Platform
+RetailMind AI is an incremental retail intelligence platform. Its current module scores customer churn risk using the Telco Customer Churn dataset (`blastchar/telco-customer-churn`).
 
-RetailMind AI is a modular retail intelligence platform that integrates machine learning and data-driven technologies to help businesses understand customer behaviour, improve operational decisions and optimize business outcomes.
+## Churn model
 
-The platform is developed incrementally, with each module contributing to one unified system.
+All reported holdout metrics use the same stratified 1,409-customer test set. Churn recall is the primary model-selection metric.
 
-## Project Vision
+| Milestone | Selected model | Accuracy | Precision | Recall | ROC-AUC |
+|---|---|---:|---:|---:|---:|
+| Day 1 baseline | Logistic Regression | 80.55% | 65.72% | 55.88% | 84.21% |
+| Day 3 tuned | Logistic Regression (`C=1`, balanced weights) | 73.81% | 50.43% | 78.34% | 84.16% |
+| Day 4 production | Day 3 champion, retained after ensemble comparison | 73.81% | 50.43% | 78.34% | 84.16% |
 
-To build an integrated AI platform for retail businesses that transforms raw business data into actionable insights, predictions and intelligent recommendations.
+Day 4 used five-fold stratified cross-validation on the training split. The Day 3 champion led with **0.8013 mean recall**; XGBoost reached 0.7659 and Random Forest 0.7157. Feature selection did not improve either ensemble. The selected production artifact is `models/churn_v4.joblib`.
 
-## Key Capabilities
+The complete comparison, feature engineering, and final evaluation live in [`notebooks/churn_analysis.ipynb`](notebooks/churn_analysis.ipynb). The saved pipeline freezes `TotalCharges` cleaning, scaling, and categorical encoding; the Day 4 ensemble candidates also include tenure, charge, service, and contract features.
 
-The platform aims to provide:
+## Run
 
-- Customer analytics and behavioural insights.
-- Predictive modelling for retail business problems.
-- Intelligent recommendations and decision support.
-- Data-driven operational optimization.
-- Deployable machine learning services.
+Install the project dependencies with `pip install -r requirements.txt`, then open and run the notebook. It trains and saves `models/churn_v4.joblib`.
 
-## Technology Stack
-
-| Area                 | Technologies |
-| -------------------- | ------------ |
-| Programming Language | Python       |
-| Data Processing      | Pandas       |
-| Machine Learning     | Scikit-learn |
-| Model Persistence    | Joblib       |
-
-Additional technologies will be incorporated as the platform evolves.
-
-## Current Development
-
-### Day 1 — End-to-End ML Pipeline & ML-as-a-Service
-
-Established the platform's initial machine learning backbone through a customer churn prediction system.
-
-**Dataset:** Telco Customer Churn — Kaggle
-
-**Baseline Model:** Logistic Regression
-
-**Implementation:**
-
-- Data ingestion, exploration and cleaning.
-- Numerical feature scaling using `StandardScaler`.
-- Categorical encoding using `OneHotEncoder`.
-- End-to-end preprocessing and classification pipeline.
-- Model evaluation and persistence using Joblib.
-- Prediction service supporting individual and batch customer records.
-
-#### Baseline Performance
-
-Evaluated on a held-out test set of 1,409 samples.
-
-| Metric    | Day 1 Baseline |
-| --------- | -------------: |
-| Accuracy  |         80.55% |
-| Precision |         65.72% |
-| Recall    |         55.88% |
-| ROC-AUC   |         84.21% |
-
-These metrics establish the initial performance benchmark for RetailMind AI. All subsequent model improvements will be evaluated against this baseline using consistent evaluation data and metrics.
-
-### Day 2 — Model Comparison & Champion Selection
-
-Trained and compared three classification algorithms against the Day 1 Logistic Regression baseline.
-
-**Models evaluated:**
-
-- Decision Tree
-- Random Forest
-- Support Vector Machine (SVM)
-
-#### Model Comparison
-
-Evaluated on the same 1,409-sample test set.
-
-| Model                       | Accuracy | Precision | Recall | ROC-AUC |
-| --------------------------- | -------: | --------: | -----: | ------: |
-| Logistic Regression (Day 1) |   80.55% |    65.72% | 55.88% |  84.21% |
-| Decision Tree               |   72.11% |    47.55% | 49.20% |  64.77% |
-| Random Forest               |   78.64% |    62.54% | 48.66% |  81.85% |
-| SVM                         |   79.13% |    64.18% | 48.40% |  79.02% |
-
-**Day 2 Challenger Champion: Decision Tree**
-
-Decision Tree achieved the highest recall (49.20%) among the three new models. However, none of the challengers outperformed the Day 1 Logistic Regression baseline.
-
-Logistic Regression therefore remains the platform's overall champion, while Decision Tree is retained as the Day 2 challenger for future comparisons.
-
-**Detailed results:** [Day 2 Documentation](docs/d2.md)
-
-### Day 3 — Multi-Model Tuning & Bias-Variance
-
-Tuned Logistic Regression, Decision Tree, Random Forest, and SVM using `GridSearchCV` with 5-fold cross-validation on the original training split. Churn recall was the selection metric. The original 1,409-row holdout remained outside the search and was evaluated after selecting the champion.
-
-#### Cross-Validation Comparison
-
-| Model | Mean CV Recall | Train–CV Gap |
-| ------------------ | -------------: | -----------: |
-| Logistic Regression | **0.8040** | 0.0012 |
-| SVM | 0.7967 | 0.0120 |
-| Decision Tree | 0.7846 | 0.0381 |
-| Random Forest | 0.7732 | 0.1179 |
-
-**Day 3 Champion: Tuned Logistic Regression** (`C=1`, `class_weight="balanced"`)
-
-Its mean 5-fold CV recall was 0.8040. On the unchanged holdout set it achieved 73.81% accuracy, 50.43% precision, 78.34% recall, and 84.16% ROC-AUC. The higher recall comes with lower precision than the Day 1 baseline, so it flags more non-churners as likely to churn. The learning curve shows train and validation recall converging near 0.80 with little improvement at larger training sizes, suggesting limited variance for recall and a plateau with the current features and model.
-
-The tuned pipeline is saved as `models/churn_v3.joblib`, and the prediction helper now loads this version. Day 1 and Day 2 model artifacts remain available for comparison. Full search results and learning-curve scores: [Day 3 results](docs/d3_results.md).
+For single-customer or batch predictions, call `predict` from [`src/predict.py`](src/predict.py) with a dictionary or DataFrame containing the model's input columns. It returns a churn label and churn probability. The service uses the Day 3 artifact until the Day 4 artifact exists.

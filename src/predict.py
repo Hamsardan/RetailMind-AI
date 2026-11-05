@@ -4,8 +4,17 @@ from pathlib import Path
 
 # Locate the persisted model relative to this file
 ROOT_DIR = Path(__file__).resolve().parent.parent
-# Serve the tuned Day 3 champion; earlier artifacts remain available for comparison.
-MODEL_PATH = ROOT_DIR / "models" / "churn_v3.joblib"
+# Prefer the final Day 4 artifact. Keep Day 3 available until the notebook has
+# been run and produced the new artifact.
+MODEL_PATH = ROOT_DIR / "models" / "churn_v4.joblib"
+if not MODEL_PATH.exists():
+    MODEL_PATH = ROOT_DIR / "models" / "churn_v3.joblib"
+
+# Day 4's serializable feature transformer lives in the project package.
+import sys
+
+if str(ROOT_DIR) not in sys.path:
+    sys.path.insert(0, str(ROOT_DIR))
 
 # Load model once when the service is imported
 model = joblib.load(MODEL_PATH)
