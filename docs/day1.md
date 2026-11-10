@@ -122,24 +122,12 @@ Both individual and batch prediction functionality were tested successfully.
 
 ```text
 RetailMind-AI/
-│
-├── data/
-│   └── churn.csv
-│
-├── notebooks/
-│   └── churn_analysis.ipynb
-│
-├── src/
-│   └── predict.py
-│
-├── models/
-│   └── churn_pipeline.joblib
-│
-└── docs/
-    └── increments/
-        └── day-01-churn-prediction.md
+├── data/churn.csv
+├── docs/day1.md ... docs/day5.md
+├── models/                 # saved classical and ANN artifacts
+├── notebooks/day1_*.ipynb ... notebooks/day5_ann.ipynb
+└── src/                    # prediction service and reusable transformers
 ```
-
 ## Key Libraries
 
 - Pandas
