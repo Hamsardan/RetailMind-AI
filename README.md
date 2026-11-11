@@ -68,6 +68,21 @@ predict_catalog_image(
 )
 ```
 
+## Day 9 — LSTM demand forecasting
+
+Day 9 introduces a univariate time-series forecasting experiment using an LSTM and the Rossmann Store Sales dataset. The current notebook uses daily sales for **Store 1** as a first baseline: it orders the observations by date, creates a 30-day look-back window, scales sales using the maximum value from the training period, and trains an LSTM to predict next-day sales.
+
+The data is split chronologically: the first 753 daily observations are used for training and the most recent 189 are held out for evaluation. The resulting training and holdout window shapes are `(723, 30, 1)` and `(189, 30, 1)`.
+
+| Metric | Holdout result |
+| ------ | -------------: |
+| MAE    |       1,366.36 |
+| RMSE   |       1,870.70 |
+
+The model uses an LSTM layer with 32 units followed by a single-unit Dense output layer. It is trained for 20 epochs with the Adam optimizer and mean squared error loss. The saved Keras model is `models/demand_lstm.keras`. The notebook also prints a one-step-ahead forecast of 3,695.56 sales units from the latest 30 observations.
+
+**Current scope:** this is a single-store baseline, not yet a multi-store forecasting model. The notebook's `X_test` is a chronological holdout made from `train.csv`; it is not the competition's official, unlabeled `test.csv`. Therefore, the reported MAE and RMSE are holdout metrics and no Kaggle test predictions or submission file are produced by this version. See [`docs/day9.md`](docs/day9.md) for the experiment details and limitations.
+
 ## Prediction service
 
 The Day 1 prediction interface remains available in `src/predict.py`. It accepts one customer as a dictionary or a batch as a DataFrame and returns a churn label and churn probability. By default it loads the latest saved classical champion. Choose a saved increment with `model_name="day1"` through `"day4"`, or opt into the ANN with `model_name="ann"` after running Day 5.
