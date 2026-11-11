@@ -18,12 +18,12 @@ Each notebook prepares its own data and fixed train/test split. Run a day's note
 
 All reported holdout metrics use the same stratified 1,409-customer test set. Churn recall is the primary model-selection metric.
 
-| Milestone | Selected model | Accuracy | Precision | Recall | ROC-AUC |
-|---|---|---:|---:|---:|---:|
-| Day 1 baseline | Logistic Regression | 80.55% | 65.72% | 55.88% | 84.21% |
-| Day 3 tuned | Logistic Regression (`C=1`, balanced weights) | 73.81% | 50.43% | 78.34% | 84.16% |
-| Day 4 production | Day 3 champion retained after ensemble comparison | 73.81% | 50.43% | 78.34% | 84.16% |
-| Day 5 challenger | Keras ANN | 75.44% | 52.68% | 73.53% | 83.83% |
+| Milestone        | Selected model                                    | Accuracy | Precision | Recall | ROC-AUC |
+| ---------------- | ------------------------------------------------- | -------: | --------: | -----: | ------: |
+| Day 1 baseline   | Logistic Regression                               |   80.55% |    65.72% | 55.88% |  84.21% |
+| Day 3 tuned      | Logistic Regression (`C=1`, balanced weights)     |   73.81% |    50.43% | 78.34% |  84.16% |
+| Day 4 production | Day 3 champion retained after ensemble comparison |   73.81% |    50.43% | 78.34% |  84.16% |
+| Day 5 challenger | Keras ANN                                         |   75.44% |    52.68% | 73.53% |  83.83% |
 
 Day 4 compared the Day 3 champion with Random Forest and XGBoost, with and without feature selection. Five-fold stratified cross-validation used only the training split. Neither the ensembles nor feature selection displaced the champion. The saved production artifact is `models/churn_v4.joblib`.
 
@@ -47,11 +47,17 @@ Open and run the notebook for the increment you want. Day 5 downloads MNIST on f
 
 Day 6 validates its CNN on Fashion-MNIST, then automatically imports and trains on the raw Kaggle product dataset. It classifies `subCategory` labels, uses a deterministic per-category 80:20 split, and saves its model, category mapping, and measured validation accuracy locally.
 
-| Model | Accuracy |
-|---|---:|
-| Day 6 catalog CNN (Fashion Product Images validation split) | 84.93% |
+Day 7 reuses the same product-image dataset and validation split. It replaces the from-scratch feature extractor with an ImageNet-pretrained ResNet50V2 backbone, first training a new classification head with the backbone frozen and then fine-tuning the top backbone layers. The Day 7 increment covers transfer learning and fine-tuning only; YOLO object detection is not implemented.
 
-Once trained, classify one image directly:
+| Model                                                       | Validation accuracy |
+| ----------------------------------------------------------- | ------------------: |
+| Day 6 catalog CNN (Fashion Product Images validation split) |              84.93% |
+| Day 7 ResNet50V2 (frozen backbone)                          |              91.37% |
+| Day 7 ResNet50V2 (fine-tuned)                               |          **96.04%** |
+
+The fine-tuned ResNet50V2 improved validation accuracy by **11.11 percentage points** over the Day 6 CNN on the same 8,810-image validation split across 27 product categories. See [`docs/day6.md`](docs/day6.md) and [`docs/day7.md`](docs/day7.md) for the implementation details and recorded results.
+
+Once trained, classify one image with either saved catalog model by passing the corresponding model path:
 
 ```python
 from src.catalog_classifier import predict_catalog_image
