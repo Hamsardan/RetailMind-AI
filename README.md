@@ -96,3 +96,16 @@ result = predict(sample.to_dict())
 ```
 
 Provide all model input columns. The ANN path requires both Day 5 artifacts to exist.
+
+
+## Day 11 — VAE Image Augmentation
+
+- Built a convolutional VAE using TensorFlow/Keras.
+- Selected minority category: Free Gifts.
+- Generated and reviewed synthetic product images.
+- Added 10 synthetic training images.
+- Retrained the Day 6 CNN for comparison.
+- Baseline test accuracy: 0.3417.
+- Augmented test accuracy: 0.3701.
+- Results: `docs/day11_generative_augmentation.md`.
+- Per-class results: `docs/day11_per_class_results.csv`.
