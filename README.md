@@ -97,7 +97,6 @@ result = predict(sample.to_dict())
 
 Provide all model input columns. The ANN path requires both Day 5 artifacts to exist.
 
-
 ## Day 11 — VAE Image Augmentation
 
 - Built a convolutional VAE using TensorFlow/Keras.
@@ -109,3 +108,17 @@ Provide all model input columns. The ANN path requires both Day 5 artifacts to e
 - Augmented test accuracy: 0.3701.
 - Results: `docs/day11_generative_augmentation.md`.
 - Per-class results: `docs/day11_per_class_results.csv`.
+
+## Day 12 — NLP review sentiment analysis
+
+Day 12 adds a reusable NLTK text-cleaning and TF-IDF + logistic regression pipeline for Amazon reviews. The original Amazon Polarity CSV train/test splits are sampled independently (up to 20,000 training and 4,000 holdout reviews by default). The notebook can download the public CSV archive or reuse local `data/amazon_polarity/train.csv` and `test.csv`.
+
+Run `notebooks/day12_nlp_sentiment.ipynb` after installing the updated requirements. The run saves `models/review_sentiment_day12.joblib`, `models/review_sentiment_day12_metrics.json`, and `docs/day12_sentiment_terms.csv`. See [`docs/day12.md`](docs/day12.md) for scope and usage.
+
+```python
+from src.review_sentiment import predict_reviews
+
+predict_reviews("Excellent quality and fast delivery!")
+```
+
+Holdout results are generated when the notebook is run on the real dataset. No Day 12 measured accuracy is recorded here yet.
