@@ -18,3 +18,6 @@ Thumbs.db
 
 # Large trained models
 models/*.keras
+
+# Day 12 raw review data and temporary downloads
+data/amazon_polarity/
